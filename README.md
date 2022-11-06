@@ -1,2 +1,3 @@
-# SheepLearning
-sheep detection in images using yolo
+# Sheep Learning :sheep: 
+
+Sheep detection in images using YOLOv3

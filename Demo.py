@@ -53,20 +53,22 @@ for output in layeroutput:
 indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
 font = cv2.FONT_HERSHEY_PLAIN
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
-
+counter = 0
 if len(indexes) > 0:
     for i in indexes.flatten():
         x, y, w, h = boxes[i]
 
         label = str(classes[class_ids[i]])
-        if label != "sheep":
+        if label.lower() != "sheep":
             continue
 
+        counter += 1
         config = str(round(confidences[i], 2))
         color = colors[i]
 
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label + " " + config, (x, y + 20), font, 1, (255, 255, 255), 2)
 
+print("Sheep counter: " + str(counter))
 plt.imshow(img)
 plt.show()

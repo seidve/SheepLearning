@@ -15,6 +15,8 @@ with open("./yolo/darknet-master/data/coco.names", 'r') as f:
 ## read test image and get size
 img = cv2.imread("./images/schafe.jpg")
 resized = cv2.resize(img, (320, 320))
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
 height, width, _ = img.shape
 # cv2.imshow('test',img)
 

@@ -22,6 +22,41 @@ print("fps: " + str(fps))
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 font = cv2.FONT_HERSHEY_PLAIN
 
+
+def read_output():
+    global w, h, x, y
+    for output in layer_output:
+        for detection in output:
+            score = detection[5:]
+            class_id = np.argmax(score)
+            confidence = score[class_id]
+            # Get bounding box and class if confidence over .7
+            if confidence > 0.5:
+                center_x = int(detection[0] * width)
+                center_y = int(detection[1] * height)
+                w = int(detection[2] * width)
+                h = int(detection[3] * height)
+
+                x = int(center_x - w / 2)
+                y = int(center_y - h / 2)
+
+                boxes.append([x, y, w, h])
+                confidences.append(float(confidence))
+                class_ids.append(class_id)
+
+
+def draw_boxes():
+    global x, y, w, h
+    x, y, w, h = boxes[i]
+    label = str(classes[class_ids[i]])
+    # if label.lower() != "sheep":
+    #     continue
+    config = str(round(confidences[i], 2))
+    color = colors[i]
+    cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+    cv2.putText(img, label + " " + config, (x, y + 20), font, 1, (255, 255, 255), 2)
+
+
 while True:
 
     # Press 'q' to quit
@@ -48,41 +83,12 @@ while True:
     confidences = []
     class_ids = []
 
-    for output in layer_output:
-        for detection in output:
-            score = detection[5:]
-            class_id = np.argmax(score)
-            confidence = score[class_id]
-            # Get bounding box and class if confidence over .7
-            if confidence > 0.5:
-                center_x = int(detection[0] * width)
-                center_y = int(detection[1] * height)
-                w = int(detection[2] * width)
-                h = int(detection[3] * height)
-
-                x = int(center_x - w / 2)
-                y = int(center_y - h / 2)
-
-                boxes.append([x, y, w, h])
-                confidences.append(float(confidence))
-                class_ids.append(class_id)
+    read_output()
 
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-    # counter = 0
     if len(indexes) > 0:
         for i in indexes.flatten():
-            x, y, w, h = boxes[i]
-
-            label = str(classes[class_ids[i]])
-            # if label.lower() != "sheep":
-            #     continue
-
-            # counter += 1
-            config = str(round(confidences[i], 2))
-            color = colors[i]
-
-            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(img, label + " " + config, (x, y + 20), font, 1, (255, 255, 255), 2)
+            draw_boxes()
 
     # Display the resulting frame
     cv2.imshow('Yolo Camera Test', img)

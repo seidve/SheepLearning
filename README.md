@@ -2,6 +2,9 @@
 
 Sheep detection in images using YOLOv3
 
+![Sheep Sheep](images/schafe.jpg)
+
+
 ## Getting Started
 
 Download the weights file and put it in `./data`:

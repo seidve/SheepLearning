@@ -1,11 +1,15 @@
 ## Demo source: https://www.youtube.com/watch?v=b59xfUZZqJE
+import os
 
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
 ## load yolov3 tiny pretrained with coco
-yolo = cv2.dnn.readNet("./yolo/yolov3-tiny.weights", "./yolo/darknet-master/cfg/yolov3-tiny.cfg")
+# yolo = cv2.dnn.readNet("./yolo/yolov3-tiny.weights", "./yolo/darknet-master/cfg/yolov3-tiny.cfg")
+
+yolo = cv2.dnn.readNet("data/yolov3.weights", "data/yolov3.cfg")
+
 
 ## read class names from coco data
 classes = []
@@ -13,7 +17,10 @@ with open("./yolo/darknet-master/data/coco.names", 'r') as f:
     classes = f.read().splitlines()
 
 ## read test image and get size
-img = cv2.imread("./images/schafe.jpg")
+path_image = "./images/local/TS1/sheep0.png"
+img = cv2.imread(path_image)
+
+
 resized = cv2.resize(img, (320, 320))
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -70,6 +77,12 @@ if len(indexes) > 0:
 
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label + " " + config, (x, y + 20), font, 1, (255, 255, 255), 2)
+
+basename = os.path.basename(path_image)
+basename = basename.replace(".", "_result.")
+
+cv2.imwrite(os.path.join(os.path.dirname(path_image), basename), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+cv2.waitKey(0)
 
 print("Sheep counter: " + str(counter))
 plt.imshow(img)
